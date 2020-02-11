@@ -21,11 +21,8 @@ public class MealTo {
     }
 
     public MealTo(Long id, LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this(dateTime, description, calories, excess);
         this.id = id;
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
-        this.excess = excess;
     }
 
     public LocalDateTime getDateTime() {
@@ -51,6 +48,7 @@ public class MealTo {
     public void setId(Long id) {
         this.id = id;
     }
+
     @Override
     public String toString() {
         return "MealTo{" +

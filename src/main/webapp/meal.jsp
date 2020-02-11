@@ -1,17 +1,14 @@
-<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>UpdateMeal</title>
+    <title>Meal</title>
 </head>
 <body>
-<jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
-<jsp:useBean id="formatter" scope="request" type="java.time.format.DateTimeFormatter"/>
 
-<form method="post" action='meals' name="frmUpdateMeal">
-    ID : <label>
-    <input type="text" name="id" readonly="readonly" value="${meal.id}"/>
-</label> <br/>
-
+<form method="post" action='meals?' name="frmMeal">
+    <label>
+        <input hidden="hidden" name="id" value="${meal.id}">
+    </label>
     DateTime : <label>
     <input type="text" name="dateTime" value="${meal.dateTime.format(formatter)}"/>
 </label> <br/>
