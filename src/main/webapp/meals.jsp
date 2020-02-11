@@ -1,11 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <title>Meals</title>
 </head>
-<body>
+<p>
 <h3 align="center">MealsList</h3>
 
 <table align="center" border=3>
@@ -26,9 +26,13 @@
             </td>
             <td>${mealTo.description}</td>
             <td>${mealTo.calories}</td>
+            <td><a href="meals?action=edit&id=<c:out value="${mealTo.id}"/>">Update</a></td>
+            <td><a href="meals?action=delete&id=<c:out value="${mealTo.id}"/>">Delete</a></td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
+<p align="center"><a href="meals?action=insert">Add meal</a></p>
+
 </body>
 </html>
