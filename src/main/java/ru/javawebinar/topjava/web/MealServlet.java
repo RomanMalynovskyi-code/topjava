@@ -3,8 +3,8 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.storage.CrudOfMeal;
 import ru.javawebinar.topjava.storage.CrudInMemory;
-import ru.javawebinar.topjava.storage.CrudInMemoryImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -26,11 +26,11 @@ public class MealServlet extends HttpServlet {
     private static final String LIST_MEAL = "/meals.jsp";
     private static final String ADD_OR_EDIT = "/meal.jsp";
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private static CrudInMemory crudInMemory;
+    private CrudOfMeal crudOfMeal;
 
     @Override
     public void init() {
-        crudInMemory = new CrudInMemoryImpl();
+        crudOfMeal = new CrudInMemory();
     }
 
     @Override
@@ -42,28 +42,25 @@ public class MealServlet extends HttpServlet {
         switch (action) {
             case "edit":
                 forward = ADD_OR_EDIT;
-                Meal mealById = crudInMemory.getMealById(Long.parseLong(req.getParameter("id")));
+                Meal mealById = crudOfMeal.getById(Long.parseLong(req.getParameter("id")));
                 if (mealById != null) {
                     req.setAttribute("meal", mealById);
                     req.setAttribute("formatter", dateTimeFormatter);
                 } else {
-                    resp.getWriter().println("ID does not exist!");
-                    break;
+                    forward = LIST_MEAL;
                 }
-                showMealList(req, resp, forward);
                 break;
             case "insert":
                 forward = ADD_OR_EDIT;
-                showMealList(req, resp, forward);
                 break;
             case "delete":
                 doDelete(req, resp);
-                break;
+                return;
             default:
                 forward = LIST_MEAL;
-                showMealList(req, resp, forward);
                 break;
         }
+        showMealList(req, resp, forward);
     }
 
     @Override
@@ -76,10 +73,10 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(dateTime, description, calories);
         String id = req.getParameter("id");
         if (id == null || id.length() == 0) {
-            crudInMemory.addMeal(meal);
+            crudOfMeal.add(meal);
         } else {
             meal = new Meal(Long.parseLong(id), dateTime, description, calories);
-            crudInMemory.updateMeal(meal);
+            crudOfMeal.update(meal);
         }
         showMealList(req, resp, LIST_MEAL);
     }
@@ -87,12 +84,12 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        crudInMemory.deleteMeal(Long.parseLong(req.getParameter("id")));
+        crudOfMeal.delete(Long.parseLong(req.getParameter("id")));
         resp.sendRedirect("meals");
     }
 
     private void showMealList(HttpServletRequest req, HttpServletResponse resp, String forward) throws ServletException, IOException {
-        List<Meal> mealList = crudInMemory.getMealList();
+        List<Meal> mealList = crudOfMeal.getList();
         List<MealTo> mealToList = MealsUtil.filteredByStreams(mealList, LocalTime.MIN, LocalTime.MAX, 2000);
         req.setAttribute("mealToList", mealToList);
         RequestDispatcher view = req.getRequestDispatcher(forward);
