@@ -4,11 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.to.MealTo;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class MealRestController {
 
     public List<MealTo> getAllBetweenDates(LocalDateTime start, LocalDateTime end) {
         log.info("getAll");
-        List<Meal> mealList = service.getBetweenDates(start, end, SecurityUtil.authUserId());
+        List<Meal> mealList = service.getBetweenDates(start.toLocalDate(), end.toLocalDate(), SecurityUtil.authUserId());
         return MealsUtil.getTos(mealList, SecurityUtil.authUserCaloriesPerDay());
     }
 
