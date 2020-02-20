@@ -8,7 +8,6 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDateTime;
@@ -65,7 +64,7 @@ public class MealRestController {
     public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        return service.create(meal, SecurityUtil.authUserId());
+        return service.create(meal, meal.getUserId());
     }
 
     public void delete(int id) {
@@ -76,10 +75,6 @@ public class MealRestController {
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        if (SecurityUtil.authUserId() == meal.getUserId()) {
-            service.update(meal, SecurityUtil.authUserId());
-        } else {
-            throw new NotFoundException("It`s not your food");
-        }
+        service.update(meal, SecurityUtil.authUserId());
     }
 }

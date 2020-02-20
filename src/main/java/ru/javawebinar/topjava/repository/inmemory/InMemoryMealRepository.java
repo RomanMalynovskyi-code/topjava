@@ -37,7 +37,6 @@ public class InMemoryMealRepository implements MealRepository {
             repository.put(userId, mealMap);
             return meal;
         } else {
-            meal.setUserId(userId);
             mealMap = repository.get(userId);
             return mealMap != null ? mealMap.computeIfPresent(meal.getId(), (id, oldMeal) -> meal) : null;
         }

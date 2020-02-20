@@ -6,6 +6,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -34,16 +35,21 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         if (meal.isNew()) {
+            meal.setUserId(SecurityUtil.authUserId());
             mealRestController.create(meal);
         } else {
-            mealRestController.update(meal, meal.getId());
+            Meal meal1 = mealRestController.get(Integer.parseInt(id));
+            if (meal1 != null && meal1.getUserId() == SecurityUtil.authUserId()) {
+                mealRestController.update(meal, meal.getId());
+            } else {
+                throw new NotFoundException("wrong meal");
+            }
         }
         response.sendRedirect("meals");
     }
