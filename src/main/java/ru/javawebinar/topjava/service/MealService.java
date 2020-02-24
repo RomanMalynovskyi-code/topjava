@@ -5,7 +5,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.jdbc.JdbcMealRepository;
 
 import java.time.LocalDate;
 import java.util.List;
