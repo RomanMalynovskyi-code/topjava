@@ -12,14 +12,14 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({"classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"})
@@ -32,60 +32,61 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void getNotFound() {
-        mealService.get(10, 100000);
+        mealService.get(NOT_EXIST.getId(), USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void getAlienMeal() {
-        mealService.get(5, 100000);
+        mealService.get(ADMIN_MEAL_5.getId(), USER_ID);
     }
 
     @Test
     public void get() {
-        Meal meal = mealService.get(1, 100000);
-        Assert.assertEquals(true, meal.equals(MEAL_1));
+        Meal meal = mealService.get(USER_MEAL_1.getId(), USER_ID);
+        Assert.assertTrue(assertMatch(meal, USER_MEAL_1));
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteAlienMeal() {
-        mealService.delete(6, 10000);
+        mealService.delete(ADMIN_MEAL_6.getId(), USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFound() {
-        mealService.delete(100, 10001);
+        mealService.delete(NOT_EXIST.getId(), ADMIN_ID);
+    }
+
+    @Test
+    public void delete() {
+        mealService.delete(USER_MEAL_2.getId(), USER_ID);
     }
 
     @Test
     public void getBetweenHalfOpen() {
         List<Meal> mealList = mealService.getBetweenHalfOpen(LocalDate.of(2020, Month.JANUARY, 31),
-                LocalDate.of(2020, Month.JANUARY, 31), 100001);
-        Assert.assertEquals(3, mealList.size());
-        Assert.assertArrayEquals(new Meal[]{new Meal(7, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410),
-                new Meal(6, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-                new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000)}, mealList.toArray());
+                LocalDate.of(2020, Month.JANUARY, 31), ADMIN_ID);
+        Assert.assertArrayEquals(new Meal[]{ADMIN_MEAL_7, ADMIN_MEAL_6, ADMIN_MEAL_5}, mealList.toArray());
     }
 
     @Test
     public void getAll() {
-        List<Meal> mealList = mealService.getAll(100000);
-        Assert.assertEquals(4, mealList.size());
+        List<Meal> mealList = mealService.getAll(USER_ID);
+        Assert.assertArrayEquals(new Meal[]{USER_MEAL_3, USER_MEAL_2, USER_MEAL_1, USER_MEAL_4}, mealList.toArray());
     }
 
     @Test
     public void update() {
-        Meal meal = new Meal(MEAL_4);
+        Meal meal = new Meal(USER_MEAL_4);
+        meal.setDateTime(LocalDateTime.of(2020, Month.FEBRUARY, 25, 0, 0));
         meal.setCalories(700);
         meal.setDescription("Dinner");
-        mealService.update(meal, 100000);
-        Assert.assertEquals(meal.getDateTime(), mealService.get(MEAL_4.getId(), 100000).getDateTime());
-        Assert.assertEquals("Dinner", mealService.get(MEAL_4.getId(), 100000).getDescription());
-        Assert.assertEquals(700, mealService.get(MEAL_4.getId(), 100000).getCalories());
+        mealService.update(meal, USER_ID);
+        Assert.assertTrue(assertMatch(meal, USER_MEAL_FOR_UPDATE));
     }
 
     @Test(expected = NotFoundException.class)
     public void updateNotFound() {
-        Meal meal = new Meal(MEAL_7);
+        Meal meal = new Meal(ADMIN_MEAL_7);
         meal.setId(100);
         meal.setCalories(700);
         meal.setDescription("Dinner1");
@@ -94,7 +95,7 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void updateAlienMeal() {
-        Meal meal = new Meal(MEAL_7);
+        Meal meal = new Meal(ADMIN_MEAL_7);
         meal.setId(SecurityUtil.authUserId());
         meal.setCalories(700);
         meal.setDescription("Dinner1");
@@ -104,7 +105,7 @@ public class MealServiceTest {
     @Test
     public void create() {
         Meal newMeal = new Meal(LocalDateTime.of(2020, Month.FEBRUARY, 23, 20, 0), "Dinner", 500);
-        Meal created = mealService.create(newMeal, 100000);
-        assertThat(created).isEqualToComparingFieldByField(newMeal);
+        Meal created = mealService.create(newMeal, USER_ID);
+        Assert.assertTrue(assertMatch(newMeal, created));
     }
 }
