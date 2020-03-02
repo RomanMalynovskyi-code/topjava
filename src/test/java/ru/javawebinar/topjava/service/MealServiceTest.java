@@ -12,12 +12,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -33,7 +35,7 @@ public class MealServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
-    private static StringBuilder statistics = new StringBuilder();
+    private static StringBuilder statistics = new StringBuilder().append("\n");
 
     @Autowired
     private MealService service;
@@ -48,7 +50,7 @@ public class MealServiceTest {
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String result = String.format("%s runtime - %d nanos", description.getMethodName(), nanos);
+            String result = String.format("%-30s %30d ms", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
             log.info(result);
             statistics.append(result).append("\n");
         }
@@ -67,17 +69,18 @@ public class MealServiceTest {
 
     @Test
     public void deleteNotFound() throws Exception {
-        expectException(1);
+        expectNotFoundException(1);
         service.delete(1, USER_ID);
     }
 
     @Test
     public void deleteNotOwn() throws Exception {
-        expectException(MEAL1_ID);
+        expectNotFoundException(MEAL1_ID);
         service.delete(MEAL1_ID, ADMIN_ID);
     }
 
     @Test
+    @Transactional
     public void create() throws Exception {
         Meal newMeal = getCreated();
         Meal created = service.create(newMeal, USER_ID);
@@ -95,13 +98,13 @@ public class MealServiceTest {
 
     @Test
     public void getNotFound() throws Exception {
-        expectException(1);
+        expectNotFoundException(1);
         service.get(1, USER_ID);
     }
 
     @Test
     public void getNotOwn() throws Exception {
-        expectException(MEAL1_ID);
+        expectNotFoundException(MEAL1_ID);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -114,7 +117,7 @@ public class MealServiceTest {
 
     @Test
     public void updateNotFound() throws Exception {
-        expectException(MEAL1.getId());
+        expectNotFoundException(MEAL1.getId());
         service.update(MEAL1, ADMIN_ID);
     }
 
@@ -136,7 +139,7 @@ public class MealServiceTest {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
     }
 
-    private void expectException(int meal1Id) {
+    private void expectNotFoundException(int meal1Id) {
         thrown.expect(NotFoundException.class);
         thrown.expectMessage("Not found entity with id=" + meal1Id);
     }

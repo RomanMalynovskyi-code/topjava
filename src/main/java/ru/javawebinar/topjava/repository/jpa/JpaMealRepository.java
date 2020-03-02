@@ -1,8 +1,8 @@
 package ru.javawebinar.topjava.repository.jpa;
 
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -13,57 +13,65 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class JpaMealRepository implements MealRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public Meal save(Meal meal, int userId) {
-        User ref = entityManager.getReference(User.class, userId);
-        meal.setUser(ref);
         if (meal.isNew()) {
+            setUser(meal, userId);
             entityManager.persist(meal);
             return meal;
         } else {
-            if (get(meal.getId(), userId) != null) {
-                return entityManager.merge(meal);
+            if (get(meal.getId(), userId) == null) {
+                return null;
             }
-            return null;
+            setUser(meal, userId);
+            return entityManager.merge(meal);
         }
     }
 
+    private void setUser(Meal meal, int userId) {
+        User ref = entityManager.getReference(User.class, userId);
+        meal.setUser(ref);
+    }
+
     @Override
+    @Transactional
     public boolean delete(int id, int userId) {
         return entityManager.createNamedQuery(Meal.DELETE)
-                .setParameter(1, userId)
-                .setParameter(2, id)
+                .setParameter("userId", userId)
+                .setParameter("id", id)
                 .executeUpdate() != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        List<Meal> mealList = entityManager.createNamedQuery(Meal.GET, Meal.class)
-                .setParameter(1, userId)
-                .setParameter(2, id)
-                .getResultList();
-        return DataAccessUtils.singleResult(mealList);
+        List<Meal> mealList = getAll(userId);
+        return entityManager.find(Meal.class, mealList.stream()
+                .filter(meal -> meal.getId() == id)
+                .map(AbstractBaseEntity::getId)
+                .findFirst().orElse(-1)
+        );
     }
 
     @Override
     public List<Meal> getAll(int userId) {
         return entityManager.createNamedQuery(Meal.ALL, Meal.class)
-                .setParameter(1, userId)
+                .setParameter("userId", userId)
                 .getResultList();
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return entityManager.createNamedQuery(Meal.GET_BETWEEN_HALF_OPEN, Meal.class)
-                .setParameter(1, userId)
-                .setParameter(2, startDate)
-                .setParameter(3, endDate)
+                .setParameter("userId", userId)
+                .setParameter("startDateTime", startDate)
+                .setParameter("endDateTime", endDate)
                 .getResultList();
     }
 }
