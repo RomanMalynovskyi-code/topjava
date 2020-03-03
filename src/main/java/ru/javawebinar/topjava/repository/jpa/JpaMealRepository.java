@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.repository.jpa;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -23,21 +22,20 @@ public class JpaMealRepository implements MealRepository {
     @Transactional
     public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
-            setUser(meal, userId);
-            entityManager.persist(meal);
+            entityManager.persist(getMealWithUserReference(meal, userId));
             return meal;
         } else {
             if (get(meal.getId(), userId) == null) {
                 return null;
             }
-            setUser(meal, userId);
-            return entityManager.merge(meal);
+            return entityManager.merge(getMealWithUserReference(meal, userId));
         }
     }
 
-    private void setUser(Meal meal, int userId) {
+    private Meal getMealWithUserReference(Meal meal, int userId) {
         User ref = entityManager.getReference(User.class, userId);
         meal.setUser(ref);
+        return meal;
     }
 
     @Override
@@ -51,12 +49,8 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        List<Meal> mealList = getAll(userId);
-        return entityManager.find(Meal.class, mealList.stream()
-                .filter(meal -> meal.getId() == id)
-                .map(AbstractBaseEntity::getId)
-                .findFirst().orElse(-1)
-        );
+        Meal meal = entityManager.find(Meal.class, id);
+        return meal != null && meal.getUser().getId() == userId ? meal : null;
     }
 
     @Override
