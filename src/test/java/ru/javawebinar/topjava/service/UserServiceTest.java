@@ -9,11 +9,13 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
-public class UserServiceTest extends ServiceTest{
+public abstract class UserServiceTest extends ServiceTest {
+
     @Autowired
     private UserService service;
 
@@ -40,7 +42,7 @@ public class UserServiceTest extends ServiceTest{
 
     @Test(expected = DataAccessException.class)
     public void duplicateMailCreate() throws Exception {
-        service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER));
+        service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER, Collections.emptyList()));
     }
 
     public void delete() throws Exception {

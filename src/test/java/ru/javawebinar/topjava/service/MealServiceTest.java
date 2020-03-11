@@ -14,8 +14,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
-public class MealServiceTest extends ServiceTest {
-
+public abstract class MealServiceTest extends ServiceTest {
     @Autowired
     private MealService service;
     @Autowired
@@ -83,7 +82,7 @@ public class MealServiceTest extends ServiceTest {
 
     @Test
     public void getAll() throws Exception {
-        MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
+        MEAL_MATCHER.assertMatch(service.getAll(USER_ID), USER_MEALS);
     }
 
     @Test
@@ -96,6 +95,6 @@ public class MealServiceTest extends ServiceTest {
 
     @Test
     public void getBetweenWithNullDates() throws Exception {
-        MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
+        MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), USER_MEALS);
     }
 }

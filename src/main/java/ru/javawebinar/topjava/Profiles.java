@@ -4,12 +4,10 @@ public class Profiles {
     public static final String
             JDBC = "jdbc",
             JPA = "jpa",
-            DATAJPA = "datajpa",
-            JDBC_MEAL_REPOSITORY_POSTGRES = "jdbcMealRepository_postgres",
-            JDBC_MEAL_REPOSITORY_HSQLDB = "jdbcMealRepository_hsqldb";
+            DATAJPA = "datajpa";
 
 
-    public static final String REPOSITORY_IMPLEMENTATION = JDBC_MEAL_REPOSITORY_HSQLDB;
+    public static final String REPOSITORY_IMPLEMENTATION = JDBC;
 
     public static final String
             POSTGRES_DB = "postgres",
@@ -28,9 +26,5 @@ public class Profiles {
                 throw new IllegalStateException("Could not find DB driver");
             }
         }
-    }
-
-    public static String getActiveRepositoryProfile() {
-        return REPOSITORY_IMPLEMENTATION;
     }
 }
