@@ -57,6 +57,9 @@
                 <version>2.22.2</version>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <includes>
+                        <include>"**/*Test.java"</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>
@@ -124,7 +127,7 @@
         <dependency>
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
-<!--            <scope>runtime</scope>-->
+            <!--            <scope>runtime</scope>-->
             <version>${ehcache.version}</version>
         </dependency>
 
