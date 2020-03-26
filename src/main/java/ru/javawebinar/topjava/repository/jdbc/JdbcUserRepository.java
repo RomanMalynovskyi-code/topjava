@@ -14,7 +14,7 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.util.List;
 
 @Repository
-@Transactional(transactionManager = "txManager", readOnly = true)
+@Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
@@ -36,7 +36,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional(transactionManager = "txManager")
+    @Transactional
     public User save(User user) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
@@ -51,9 +51,10 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional(transactionManager = "txManager")
+    @Transactional
     public boolean delete(int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
+
     }
 
     @Override
@@ -72,6 +73,6 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM users u LEFT JOIN user_roles r ON u.id = r.user_id ORDER BY name, email", ROW_MAPPER);
     }
 }
