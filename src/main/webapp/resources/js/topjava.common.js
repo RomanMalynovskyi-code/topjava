@@ -1,11 +1,12 @@
-var context, form;
+var context, form, formMeal;
 
 function makeEditable(ctx) {
     context = ctx;
     form = $('#detailsForm');
+    formMeal = $('#filterForm');
     $(".delete").click(function () {
         if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
+            deleteRow($(this).closest("tr").attr("id"));
         }
     });
 
@@ -47,6 +48,21 @@ function save() {
         $("#editRow").modal("hide");
         updateTable();
         successNoty("Saved");
+    });
+}
+
+function filterMeal() {
+    $.ajax({
+        type: "GET",
+        url: context.ajaxUrl + "filter",
+        data:formMeal.serialize() /*{
+            startDate: $("#startDate"),
+            startTime: $("#startTime"),
+            endDate: $("#endDate"),
+            endTime: $("#endTime")
+        }*/
+    }).done(function () {
+        updateTable();
     });
 }
 

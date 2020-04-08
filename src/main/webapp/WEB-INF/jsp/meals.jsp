@@ -12,24 +12,24 @@
     <div class="jumbotron pt-4">
         <div class="container">
             <h3 class="text-center"><spring:message code="meal.title"/></h3>
-            <form method="get" action="meals/filter">
+            <form id="filterForm">
                 <dl>
                     <dt><spring:message code="meal.startDate"/>:</dt>
-                    <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
+                    <dd><input id="startDate" type="date" name="startDate" value="${param.startDate}"></dd>
                 </dl>
                 <dl>
                     <dt><spring:message code="meal.endDate"/>:</dt>
-                    <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
+                    <dd><input id="endDate" type="date" name="endDate" value="${param.endDate}"></dd>
                 </dl>
                 <dl>
                     <dt><spring:message code="meal.startTime"/>:</dt>
-                    <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
+                    <dd><input id="startTime" type="time" name="startTime" value="${param.startTime}"></dd>
                 </dl>
                 <dl>
                     <dt><spring:message code="meal.endTime"/>:</dt>
-                    <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
+                    <dd><input id="endTime" type="time" name="endTime" value="${param.endTime}"></dd>
                 </dl>
-                <button type="submit"><spring:message code="meal.filter"/></button>
+                <button onclick="filterMeal()"><spring:message code="meal.filter"/></button>
             </form>
 
             <hr>
@@ -50,7 +50,7 @@
                 </thead>
                 <c:forEach items="${meals}" var="meal">
                     <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealTo"/>
-                    <tr data-mealExcess="${meal.excess}">
+                    <tr id="${meal.id}" data-mealExcess="${meal.excess}">
                         <td>
                                 <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
                                 <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
@@ -61,7 +61,7 @@
                         <td>${meal.calories}</td>
                         <td><a href="meals/update?id=${meal.id}">
                             <span class="fa fa-pencil"></span></a></td>
-                        <td><a class="delete" id=${meal.id}><span class="fa fa-remove"></span></a></td>
+                        <td><a class="delete"><span class="fa fa-remove"></span></a></td>
                     </tr>
                 </c:forEach>
             </table>
