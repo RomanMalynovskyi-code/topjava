@@ -1,3 +1,5 @@
+var mealAjaxUrl = "ajax/profile/meals/";
+
 function updateFilteredTable() {
     $.ajax({
         type: "GET",
@@ -13,27 +15,38 @@ function clearFilter() {
 
 $(function () {
     makeEditable({
-        ajaxUrl: "ajax/profile/meals/",
+        ajaxUrl: mealAjaxUrl,
         datatableApi: $("#datatable").DataTable({
+            "ajax": {
+                "url": mealAjaxUrl,
+                "dataSrc": ""
+            },
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime"
+                    "data": "dateTime",
+                    "render": function (data) {
+                        var date = data.substring(0, 10);
+                        var time = data.substring(11, 16);
+                        return date + " " + time;
+                    }
                 },
                 {
                     "data": "description"
                 },
                 {
-                    "data": "calories"
+                    "data": "calories",
                 },
                 {
-                    "defaultContent": "Edit",
-                    "orderable": false
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": renderEditBtn
                 },
                 {
-                    "defaultContent": "Delete",
-                    "orderable": false
+                    "defaultContent": "",
+                    "orderable": false,
+                    "render": renderDeleteBtn
                 }
             ],
             "order": [
@@ -41,7 +54,14 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                if (data.excess) {
+                    $(row).css("color", "red");
+                } else {
+                    $(row).css("color", "green");
+                }
+            }
         }),
         updateTable: updateFilteredTable
     });
