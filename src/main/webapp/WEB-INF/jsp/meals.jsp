@@ -7,9 +7,7 @@
 <body>
 <script type="text/javascript" src="resources/js/topjava.common.js" defer></script>
 <script type="text/javascript" src="resources/js/topjava.meals.js" defer></script>
-<script type="text/javascript" src="resources/js/i18n.js" async></script>
 <jsp:include page="fragments/bodyHeader.jsp"/>
-
 <div class="jumbotron pt-4">
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
@@ -80,7 +78,7 @@
 
                     <div class="form-group">
                         <label for="dateTime" class="col-form-label"><spring:message code="meal.dateTime"/></label>
-                        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime"
+                        <input id="dateTime" type="text" class="form-control" name="dateTime"
                                placeholder="<spring:message code="meal.dateTime"/>">
                     </div>
 
@@ -112,8 +110,18 @@
 </div>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
+<link rel="stylesheet" type="text/css" href="webjars/datetimepicker/2.5.20/jquery.datetimepicker.css"/>
+<script src="webjars/jquery/3.4.1/jquery.js"></script>
+<script src="webjars/datetimepicker/2.5.20/build/jquery.datetimepicker.full.min.js"></script>
 <script type="text/javascript">
-    const i18n = [];
+    $("#dateTime").datetimepicker({
+        format: "Y-m-d H:i",
+        inline: true,
+        lang: "en",
+    });
+</script>
+<jsp:include page="fragments/i18n.jsp"/>
+<script type="text/javascript">
     i18n["addTitle"] = '<spring:message code="meal.add"/>';
     i18n["editTitle"] = '<spring:message code="meal.edit"/>';
 </script>

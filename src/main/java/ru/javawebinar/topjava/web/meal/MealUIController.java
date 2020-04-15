@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.web.BindingErrorHandler;
+import ru.javawebinar.topjava.web.BindingErrorUtil;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ajax/profile/meals")
-public class MealUIController extends AbstractMealController implements BindingErrorHandler {
+public class MealUIController extends AbstractMealController {
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,8 +40,9 @@ public class MealUIController extends AbstractMealController implements BindingE
 
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
-        ResponseEntity<String> joiner = getStringResponseEntity(result);
-        if (joiner != null) return joiner;
+        if (result.hasErrors()) {
+            return BindingErrorUtil.getUnprocessableResponseEntity(result);
+        }
         if (meal.isNew()) {
             super.create(meal);
         } else {

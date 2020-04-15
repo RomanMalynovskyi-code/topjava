@@ -7,14 +7,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.web.BindingErrorHandler;
+import ru.javawebinar.topjava.web.BindingErrorUtil;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/ajax/admin/users")
-public class AdminUIController extends AbstractUserController implements BindingErrorHandler {
+public class AdminUIController extends AbstractUserController {
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,8 +37,9 @@ public class AdminUIController extends AbstractUserController implements Binding
 
     @PostMapping
     public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo, BindingResult result) {
-        ResponseEntity<String> joiner = getStringResponseEntity(result);
-        if (joiner != null) return joiner;
+        if (result.hasErrors()) {
+            return BindingErrorUtil.getUnprocessableResponseEntity(result);
+        }
         if (userTo.isNew()) {
             super.create(userTo);
         } else {

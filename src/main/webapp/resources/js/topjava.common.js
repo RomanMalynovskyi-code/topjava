@@ -8,7 +8,17 @@ function makeEditable(ctx) {
     });
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
-    $.ajaxSetup({cache: false});
+    $.ajaxSetup({cache: false},
+        {
+            contents: {
+                text: /text/
+            },
+            converters: {
+                "text json": function (result) {
+                    return result;
+                }
+            }
+        });
 }
 
 function add() {
@@ -53,6 +63,7 @@ function save() {
         context.updateTable();
         successNoty("common.saved");
     });
+    debugger;
 }
 
 var failedNote;
@@ -63,6 +74,7 @@ function closeNoty() {
         failedNote = undefined;
     }
 }
+
 
 function successNoty(key) {
     closeNoty();

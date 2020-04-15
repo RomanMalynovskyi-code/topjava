@@ -12,7 +12,6 @@ function clearFilter() {
     $("#filter")[0].reset();
     $.get("ajax/profile/meals/", updateTableByData);
 }
-
 $(function () {
     makeEditable({
         ajaxUrl: mealAjaxUrl,
@@ -26,11 +25,11 @@ $(function () {
             "columns": [
                 {
                     "data": "dateTime",
-                    "render": function (data) {
-                        var date = data.substring(0, 10);
-                        var time = data.substring(11, 16);
-                        return date + " " + time;
-                    }
+                      "render": function (data) {
+                          var date = data.substring(0, 10);
+                          var time = data.substring(11, 16);
+                          return date + " " + time;
+                      }
                 },
                 {
                     "data": "description"
@@ -55,12 +54,13 @@ $(function () {
                     "desc"
                 ]
             ],
-            "createdRow": function (row, data, dataIndex) {
-                if (data.excess) {
-                    $(row).css("color", "red");
+            "createdRow": function (row, data) {
+                if (!data.excess) {
+                    $(row).attr("data-mealExcess", false);
                 } else {
-                    $(row).css("color", "green");
+                    $(row).attr("data-mealExcess", true);
                 }
+
             }
         }),
         updateTable: updateFilteredTable
