@@ -35,4 +35,12 @@ public class MealTestData {
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, MEAL1.getDateTime(), "Обновленный завтрак", 200);
     }
+
+    public static Meal getNewNotValid() {
+        return new Meal(null, of(2020, Month.APRIL, 20, 20, 0), "Созданный ужин", 3);
+    }
+
+    public static Meal getUpdatedNotValid() {
+        return new Meal(MEAL1_ID, MEAL1.getDateTime(), "О", 200);
+    }
 }

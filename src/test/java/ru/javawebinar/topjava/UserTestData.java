@@ -33,4 +33,16 @@ public class UserTestData {
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
     }
+
+    public static User getNewNotValid() {
+        return new User(null, "N", "new@gmail.com", "newPass", 0, false, new Date(), Collections.singleton(Role.USER));
+    }
+
+    public static User getUpdatedNotValid() {
+        User updated = new User(USER);
+        updated.setName("U");
+        updated.setCaloriesPerDay(3);
+        updated.setRoles(Collections.singletonList(Role.ADMIN));
+        return updated;
+    }
 }
